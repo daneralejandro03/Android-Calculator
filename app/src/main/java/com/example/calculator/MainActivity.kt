@@ -19,6 +19,8 @@ class MainActivity : AppCompatActivity() {
     val multiplication = "*"
     val division = "/"
     val percentage = "%"
+    val delete = "C"
+    val clearAll = "CA"
 
     var operationCurrent = ""
 
@@ -47,50 +49,63 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun changeOperator(button: View) {
-        calculate()
-        val buttonAux: Button = button as Button
+        if (TextViewTemp.text.isNotEmpty() || firstNumber.toString() != "NaN") {
+            calculate()
+            println("Multiplicación $multiplication")
+            val buttonAux: Button = button as Button
 
-        println("Operación actual: $operationCurrent")
-        println("Primer número: $firstNumber")
-        println("Segundo número: $secondNumber")
-        println("Boton: ${buttonAux.text.toString().trim()}")
+            println("Operación actual: $operationCurrent")
+            println("Primer número: $firstNumber")
+            println("Segundo número: $secondNumber")
+            println("Boton: ${buttonAux.text.toString().trim()}")
 
-        operationCurrent = when (buttonAux.text.toString().trim()) {
-            "÷" -> division
-            "X" -> multiplication
-            else -> buttonAux.text.toString().trim()
+            if (buttonAux.text.toString().trim() == "÷") {
+                println()
+                operationCurrent = "/"
+            } else if (buttonAux.text.toString().trim() == "X") {
+                operationCurrent = "*"
+            } else {
+                operationCurrent = buttonAux.text.toString().trim()
+            }
+
+            TextViewResult.text = formatDecimal.format(firstNumber) + operationCurrent
+            TextViewTemp.text = ""
         }
-
-        TextViewResult.text = formatDecimal.format(firstNumber) + operationCurrent
-        TextViewTemp.text = ""
     }
 
     fun calculate() {
-        if (!firstNumber.isNaN()) {
-            try {
-                secondNumber = TextViewTemp.text.toString().toDouble()
-                TextViewTemp.text = ""
-
-                firstNumber = when (operationCurrent) {
-                    plus -> firstNumber + secondNumber
-                    subtraction -> firstNumber - secondNumber
-                    multiplication -> firstNumber * secondNumber
-                    division -> firstNumber / secondNumber
-                    percentage -> firstNumber % secondNumber
-                    else -> {
-                        Log.e("ERROR", "No se ha seleccionado una operación $operationCurrent")
-                        return
-                    }
+        try {
+            if (firstNumber.toString() != "NaN") {
+                if (TextViewTemp.text.toString().isEmpty()) {
+                    TextViewTemp.text = TextViewResult.text.toString()
                 }
-            } catch (e: NumberFormatException) {
-                Log.e("ERROR", "Formato de número no válido")
+                try {
+                    secondNumber = TextViewTemp.text.toString().toDouble()
+                    TextViewTemp.text = ""
+
+                    when (operationCurrent) {
+                        plus -> firstNumber = (firstNumber + secondNumber)
+                        subtraction -> firstNumber = (firstNumber - secondNumber)
+                        multiplication -> firstNumber = (firstNumber * secondNumber)
+                        division -> firstNumber = (firstNumber / secondNumber)
+                        percentage -> firstNumber = (firstNumber % secondNumber)
+                        else -> {
+                            Log.e("ERROR", "No se ha seleccionado una operación $operationCurrent")
+                            return
+                        }
+                    }
+                } catch (e: NumberFormatException) {
+                    Log.e("ERROR", "Formato de número no válido")
+                }
+            } else {
+                try {
+                    firstNumber = TextViewTemp.text.toString().toDouble()
+                } catch (e: NumberFormatException) {
+                    Log.e("ERROR", "Formato de número no válido")
+                }
             }
-        } else {
-            try {
-                firstNumber = TextViewTemp.text.toString().toDouble()
-            } catch (e: NumberFormatException) {
-                Log.e("ERROR", "Formato de número no válido")
-            }
+        } catch (e: Exception) {
+
         }
     }
 
@@ -102,5 +117,36 @@ class MainActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Solo se permiten números", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    fun Delete(button: View) {
+
+        val buttonAux: Button = button as Button
+
+        if (buttonAux.text.toString().trim() == delete) {
+            if (TextViewTemp.text.isNotEmpty()) {
+                var actualDate: CharSequence = TextViewTemp.text.toString() as CharSequence
+                TextViewTemp.text = actualDate.subSequence(0, actualDate.length - 1)
+            } else {
+                firstNumber = Double.NaN
+                secondNumber = Double.NaN
+
+                TextViewTemp.text = ""
+                TextViewResult.text = ""
+            }
+        } else if (buttonAux.text.toString().trim() == clearAll) {
+            firstNumber = Double.NaN
+            secondNumber = Double.NaN
+
+            TextViewTemp.text = ""
+            TextViewResult.text = ""
+        }
+    }
+
+    fun Equal(button: View) {
+        calculate()
+        TextViewResult.text = formatDecimal.format(firstNumber)
+        firstNumber = Double.NaN
+        operationCurrent = ""
     }
 }
