@@ -29,6 +29,8 @@ Código
 MainActivity.kt
 kotlin
 Copiar código
+
+``` 
 package com.example.calculator
 
 import android.icu.text.DecimalFormat
@@ -43,7 +45,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-´´´
+
 class MainActivity : AppCompatActivity() {
 
     val plus = "+"
@@ -169,4 +171,4 @@ class MainActivity : AppCompatActivity() {
         TextViewResult.text = ""
     }
 }
-´´´
+```
