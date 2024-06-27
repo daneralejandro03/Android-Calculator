@@ -1,4 +1,3 @@
-Copiar código
 # Calculadora Android
 
 Esta es una aplicación de calculadora simple desarrollada para la plataforma Android utilizando Kotlin. La calculadora admite las operaciones básicas de suma, resta, multiplicación, división y porcentaje, y permite eliminar el último dígito ingresado o limpiar todos los datos.
