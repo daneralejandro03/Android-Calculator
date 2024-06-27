@@ -25,11 +25,10 @@ class MainActivity : AppCompatActivity() {
     var firstNumber: Double = Double.NaN
     var secondNumber: Double = Double.NaN
 
-    lateinit var TetxViewTemp: TextView
-    lateinit var TetxViewResult: TextView
+    lateinit var TextViewTemp: TextView
+    lateinit var TextViewResult: TextView
 
     lateinit var formatDecimal: DecimalFormat
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,65 +42,65 @@ class MainActivity : AppCompatActivity() {
 
         formatDecimal = DecimalFormat("#.#########")
 
-        TetxViewTemp = findViewById(R.id.textViewTemp)
-        TetxViewResult = findViewById(R.id.textViewResult)
-
+        TextViewTemp = findViewById(R.id.textViewTemp)
+        TextViewResult = findViewById(R.id.textViewResult)
     }
 
     fun changeOperator(button: View) {
-
         calculate()
         val buttonAux: Button = button as Button
 
-        println("Operación actual:" + operationCurrent)
-        println("Primer número:" + firstNumber)
-        println("Segundo número:" + secondNumber)
-        println("Boton:" + buttonAux.text.toString().trim())
+        println("Operación actual: $operationCurrent")
+        println("Primer número: $firstNumber")
+        println("Segundo número: $secondNumber")
+        println("Boton: ${buttonAux.text.toString().trim()}")
 
-        if (buttonAux.text.toString().trim() == "÷") {
-            println()
-            operationCurrent = "/"
-        } else if (buttonAux.text.toString().trim() == "X") {
-            operationCurrent = "*"
-        } else {
-            operationCurrent = buttonAux.text.toString().trim()
+        operationCurrent = when (buttonAux.text.toString().trim()) {
+            "÷" -> division
+            "X" -> multiplication
+            else -> buttonAux.text.toString().trim()
         }
 
-        TetxViewResult.text = formatDecimal.format(firstNumber)+ operationCurrent
-        TetxViewTemp.text = ""
+        TextViewResult.text = formatDecimal.format(firstNumber) + operationCurrent
+        TextViewTemp.text = ""
     }
 
     fun calculate() {
+        if (!firstNumber.isNaN()) {
+            try {
+                secondNumber = TextViewTemp.text.toString().toDouble()
+                TextViewTemp.text = ""
 
-        if (firstNumber.toString() != "NaN") {
-            secondNumber = TetxViewTemp.text.toString().toDouble();
-            TetxViewTemp.text = ""
-
-            when (operationCurrent) {
-                "+" -> firstNumber = (firstNumber + secondNumber)
-                "-" -> firstNumber = (firstNumber - secondNumber)
-                "*" -> firstNumber = (firstNumber * secondNumber)
-                "/" -> firstNumber = (firstNumber / secondNumber)
-                "%" -> firstNumber = (firstNumber % secondNumber)
-                else -> {
-                    Log.e("ERROR", "No se ha seleccionado una operación"+ operationCurrent)
+                firstNumber = when (operationCurrent) {
+                    plus -> firstNumber + secondNumber
+                    subtraction -> firstNumber - secondNumber
+                    multiplication -> firstNumber * secondNumber
+                    division -> firstNumber / secondNumber
+                    percentage -> firstNumber % secondNumber
+                    else -> {
+                        Log.e("ERROR", "No se ha seleccionado una operación $operationCurrent")
+                        return
+                    }
                 }
+            } catch (e: NumberFormatException) {
+                Log.e("ERROR", "Formato de número no válido")
             }
         } else {
-            firstNumber = TetxViewTemp.text.toString().toDouble();
+            try {
+                firstNumber = TextViewTemp.text.toString().toDouble()
+            } catch (e: NumberFormatException) {
+                Log.e("ERROR", "Formato de número no válido")
+            }
         }
     }
-
 
     fun selectNumber(button: View) {
         val buttonAux: Button = button as Button
         val newText = buttonAux.text.toString()
-        if (newText.all { it.isDigit() }) { // Verificar si todos los caracteres son dígitos
-            TetxViewTemp.text = TetxViewTemp.text.toString() + newText
+        if (newText.all { it.isDigit() }) {
+            TextViewTemp.text = TextViewTemp.text.toString() + newText
         } else {
-            // Manejar el caso de entrada inválida, por ejemplo:
-            Toast.makeText(this, "Solo se permiten números", Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(this, "Solo se permiten números", Toast.LENGTH_SHORT).show()
         }
     }
 }
